@@ -12,9 +12,9 @@ function App() {
   return (
     <BrowserRouter>
         <Switch>
-            <Route path="/" exact component={Login}/>
-            <Route path="/Todo" exact component={Todo}/>
-            <Route path="/TodoAdd" exact component={TodoAdd}/>
+            <Route path="/" exact component={Login} />
+            <Route path="/Todo" exact component={Todo} />
+            <Route path="/TodoAdd" exact component={TodoAdd} />
         </Switch>
     </BrowserRouter>
   );

@@ -10,8 +10,6 @@ interface TodoAddProps {
 
 const TodoAdd = (props: TodoAddProps) => {
 
-
-
     return (
         <>
           <AppBar>{"할일 추가"}</AppBar>
