@@ -1,9 +1,10 @@
-import React, { ChangeEvent, useState } from "react";
-import { Button, TextField } from "@material-ui/core";
+import React, { ChangeEvent, useContext, useState } from "react";
+import { Button, makeStyles, TextField } from "@material-ui/core";
 import firebase from "firebase";
 import { History } from "history";
-import { Page } from "./components/Page";
-
+import { Page } from "../components/Page";
+import { AppBar } from "../components/AppBar";
+import { UserContext } from '../App';
 
 
 
@@ -12,11 +13,13 @@ interface PageProps {
     history: History
 }
 
+
 const Login = (props: PageProps) => {
+    const { dispatch, state } = useContext(UserContext);
     const [ id, setId ] = useState<string>("");
     const [ password, setPassword ] = useState<string>("");
     const [ errorLabel, setErrorLabel ] = useState<string>("");
-
+    const { pageWrap, textFieldWrap, buttonWrap, errorMessage } = useStyle();
 
     const onHandleChange = (e: ChangeEvent<HTMLInputElement>) => {
        if (e.target.name === "id") {
@@ -28,9 +31,11 @@ const Login = (props: PageProps) => {
 
 
     const onHandleClick = () => {
+
         firebase.auth().signInWithEmailAndPassword(id, password)
             .then((user) => {
                 props.history.push("./Todo");
+                dispatch({type: "USER_LOGIN" })
             })
             .catch((error) => {
                 if(error.code === "auth/wrong-password") {
@@ -51,18 +56,55 @@ const Login = (props: PageProps) => {
 
     return(
         <Page>
-            <form>
-                <TextField label="아이디" name="id" onChange={onHandleChange}/>
-                <TextField label="패스워드" name="password" onChange={onHandleChange}/>
-                <Button onClick={onHandleClick}>
-                  확인
-                </Button>
+            <AppBar>
+                {"로그인"}
+            </AppBar>
+            <form className={pageWrap}>
+                <TextField label="아이디"
+                           name="id"
+                           onChange={onHandleChange}
+                           className={textFieldWrap}/>
+                <TextField label="비밀번호"
+                           name="password"
+                           type="password"
+                           onChange={onHandleChange}
+                           className={textFieldWrap}/>
+
             </form>
-            <div>
+            <Button onClick={onHandleClick} className={buttonWrap}>
+                확인
+            </Button>
+            <div className={errorMessage}>
               {errorLabel}
             </div>
         </Page>
     )
 }
 
+
+
+const useStyle = makeStyles({
+   pageWrap: {
+       padding: 20
+   },
+   textFieldWrap: {
+       width: "100%"
+   },
+    buttonWrap: {
+       width: "100%",
+        height: 56,
+        position: "fixed",
+        backgroundColor: "gray",
+        bottom: 0,
+        color: "white",
+        fontWeight: "bold",
+        fontSize: 14
+    },
+    errorMessage: {
+       padding: 20,
+        fontSize: 12,
+        color: "red"
+    }
+
+});
 export default Login;
