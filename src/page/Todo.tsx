@@ -1,36 +1,51 @@
-import React, { useContext } from "react";
-import { Fab, makeStyles, ListItem, ListItemText, Typography, Grid, Divider } from "@material-ui/core";
+import React, { useContext, useEffect, useState } from "react";
+import { Fab, makeStyles, ListItem, Grid } from "@material-ui/core";
 import { Page } from "../components/Page";
 import { AppBar } from "../components/AppBar";
 import AddIcon from '@material-ui/icons/Add';
 import { UserContext } from '../App';
 import { useHistory } from "react-router-dom";
-
-
+import firebase from "firebase";
 
 
 const Todo = () => {
     let history = useHistory();
-    const userData = useContext(UserContext);
+    const { id, user } = useContext(UserContext);
     const onHandleClick = () => history.push("./TodoAdd")
     const { addIcon, lists } = useStyle();
+    const [ todolist , setTodoList ] = useState<any>();
+    useEffect(() => {
+       firebase.database().ref(`/todos/${id}`).get().then((snapshop)=> {
+          if(snapshop.exists()) {
+              data(snapshop.val());
 
+          }
+      }).catch((error)=>{
+          console.error(error);
+      })
+    },[]);
+
+    const data = (data:any) => {
+
+       // console.log(data);
+
+    }
     return (
         <Page>
             <AppBar>
-                { "내 할일 목록" + userData.state.user.email }
+                { "내 할일 목록" + user.email }
             </AppBar>
             {
-                userData.state.todos.length > 0 ?
-                userData.state.todos.map((data, index)=>{
+                1>0 ?
+                    [1,2,3,4].map((data, index)=>{
                     return (
                         <ListItem key={index.toString()} className={lists}>
                             <Grid container spacing={1} direction="column">
                                 <Grid item>
-                                    {`제목: ${data.title}`}
+                                    {`제목: ${data}`}
                                 </Grid>
                                 <Grid item>
-                                    {`내용: ${data.contents}`}
+                                    {`내용: ${data}`}
                                 </Grid>
                             </Grid>
                         </ListItem>

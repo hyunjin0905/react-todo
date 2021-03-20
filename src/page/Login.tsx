@@ -1,29 +1,25 @@
 import React, { ChangeEvent, useContext, useState } from "react";
 import { Button, makeStyles, TextField } from "@material-ui/core";
 import firebase from "firebase";
-import { History } from "history";
 import { Page } from "../components/Page";
 import { AppBar } from "../components/AppBar";
-import { UserContext } from '../App';
+import { UserContext , UserAction} from '../App';
+import { useHistory } from "react-router";
 
 
 
-interface PageProps {
-    location: Location,
-    history: History
-}
 
 
-const Login = (props: PageProps) => {
-    const { dispatch, state } = useContext(UserContext);
-    const [ id, setId ] = useState<string>("");
+const Login = () => {
+    const history = useHistory();
+    const { id, todos, user, dispatch } = useContext(UserContext);
+    const [ email, setEmail ] = useState<string>("");
     const [ password, setPassword ] = useState<string>("");
     const [ errorLabel, setErrorLabel ] = useState<string>("");
     const { pageWrap, textFieldWrap, buttonWrap, errorMessage } = useStyle();
-
     const onHandleChange = (e: ChangeEvent<HTMLInputElement>) => {
        if (e.target.name === "id") {
-           setId(e.target.value);
+           setEmail(e.target.value);
        } else {
            setPassword(e.target.value);
        }
@@ -32,18 +28,29 @@ const Login = (props: PageProps) => {
 
     const onHandleClick = () => {
 
-        firebase.auth().signInWithEmailAndPassword(id, password)
+        firebase.auth().signInWithEmailAndPassword(email, password)
             .then((user) => {
-                props.history.push("./Todo");
-                dispatch({type: "USER_LOGIN" })
+                dispatch(
+                    {
+                        type: UserAction.USER_LOGIN,
+                        id: user.user?.uid ,
+                        user:
+                            {
+                                email: email,
+                                password: password
+                            }
+                    }
+                );
+                history.push("./Todo");
+
             })
             .catch((error) => {
                 if(error.code === "auth/wrong-password") {
                     setErrorLabel("비밀번호가 틀렸습니다.");
                 } else if (error.code === "auth/user-not-found") {
-                   firebase.auth().createUserWithEmailAndPassword(id,password)
+                   firebase.auth().createUserWithEmailAndPassword(email,password)
                        .then((user) => {
-                           props.history.push("./Todo");
+                        //   props.history.push("./Todo");
                        }).catch((error) => {
                    })
                 } else if (error.code === "auth/invalid-email") {
@@ -53,6 +60,8 @@ const Login = (props: PageProps) => {
                 }
             });
     }
+
+
 
     return(
         <Page>
