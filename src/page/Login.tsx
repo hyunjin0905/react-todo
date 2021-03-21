@@ -12,7 +12,7 @@ import { useHistory } from "react-router";
 
 const Login = () => {
     const history = useHistory();
-    const { id, todos, user, dispatch } = useContext(UserContext);
+    const { dispatch } = useContext(UserContext);
     const [ email, setEmail ] = useState<string>("");
     const [ password, setPassword ] = useState<string>("");
     const [ errorLabel, setErrorLabel ] = useState<string>("");
@@ -34,11 +34,7 @@ const Login = () => {
                     {
                         type: UserAction.USER_LOGIN,
                         id: user.user?.uid ,
-                        user:
-                            {
-                                email: email,
-                                password: password
-                            }
+                        user: { email: email, password: password }
                     }
                 );
                 history.push("./Todo");
@@ -50,7 +46,7 @@ const Login = () => {
                 } else if (error.code === "auth/user-not-found") {
                    firebase.auth().createUserWithEmailAndPassword(email,password)
                        .then((user) => {
-                        //   props.history.push("./Todo");
+                           history.push("./Todo");
                        }).catch((error) => {
                    })
                 } else if (error.code === "auth/invalid-email") {

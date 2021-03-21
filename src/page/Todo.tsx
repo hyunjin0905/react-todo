@@ -6,18 +6,21 @@ import AddIcon from '@material-ui/icons/Add';
 import { UserContext } from '../App';
 import { useHistory } from "react-router-dom";
 import firebase from "firebase";
+import { Todos } from "../type/User";
 
 
 const Todo = () => {
     let history = useHistory();
-    const { id, user } = useContext(UserContext);
-    const onHandleClick = () => history.push("./TodoAdd")
+    const { id, user, dispatch } = useContext(UserContext);
     const { addIcon, lists } = useStyle();
-    const [ todolist , setTodoList ] = useState<any>();
+    const [ todoList , setTodoList ] = useState<Todos[]>();
+    const [ selected, setSelectedListItem ] = useState<boolean>(false);
+    const [ todo, setTodo ] = useState<Todos>();
+    const onHandleClick = () => history.push("./TodoAdd")
     useEffect(() => {
        firebase.database().ref(`/todos/${id}`).get().then((snapshop)=> {
           if(snapshop.exists()) {
-              data(snapshop.val());
+              convertToData(snapshop.val());
 
           }
       }).catch((error)=>{
@@ -25,11 +28,26 @@ const Todo = () => {
       })
     },[]);
 
-    const data = (data:any) => {
+    const convertToData = (data: any) => {
 
-       // console.log(data);
-
+        const dataArr = Object.entries(data);
+        const newArr:any[] = [];
+         for (let i = 0; i < dataArr.length; i++) {
+             dataArr[i].forEach((data, index)=>{
+                 if(index === 1) {
+                     newArr.push(dataArr[i][index]);
+                 }
+             })
+         }
+        setTodoList(newArr);
+        dispatch({type: "TODO_ADD" })
     }
+
+    const onHandleListClick = () => {
+        history.push({ pathname:"./todoAdd", state: { todos: todo, option: "MODIFY" } });
+    }
+
+
     return (
         <Page>
             <AppBar>
@@ -37,15 +55,19 @@ const Todo = () => {
             </AppBar>
             {
                 1>0 ?
-                    [1,2,3,4].map((data, index)=>{
+                    todoList?.map((data, index)=>{
                     return (
-                        <ListItem key={index.toString()} className={lists}>
+                        <ListItem key={index.toString()} className={lists} onClick={()=> {
+                            setSelectedListItem(true);
+                            setTodo(data)
+                            onHandleListClick()
+                        }} >
                             <Grid container spacing={1} direction="column">
                                 <Grid item>
-                                    {`제목: ${data}`}
+                                    {`제목: ${data.title}`}
                                 </Grid>
                                 <Grid item>
-                                    {`내용: ${data}`}
+                                    {`내용: ${data.contents}`}
                                 </Grid>
                             </Grid>
                         </ListItem>

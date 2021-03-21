@@ -4,8 +4,12 @@ import { AppBar } from '../components/AppBar';
 import { TextField, Button, makeStyles } from "@material-ui/core";
 import { UserContext } from '../App';
 import firebase from "firebase";
+import { useHistory, useLocation } from "react-router-dom";
 
 const TodoAdd = () => {
+    let history = useHistory();
+    let location = useLocation();
+    console.log(location);
     const { dispatch, id, todos, user } = useContext(UserContext);
     const [ title, setTitle ] = useState<string>("");
     const [ contents, setContents ] = useState<string>("");
@@ -15,7 +19,7 @@ const TodoAdd = () => {
 
     const saveTodoData = () => {
          firebase.database().ref(`/todos/${id}`).push({ title: title, contents:contents });
-
+         history.push("./Todo");
     }
 
     const onHandleClick = (e: React.MouseEvent) => {
