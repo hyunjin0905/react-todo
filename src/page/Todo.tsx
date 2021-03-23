@@ -6,47 +6,46 @@ import AddIcon from '@material-ui/icons/Add';
 import { UserContext } from '../App';
 import { useHistory } from "react-router-dom";
 import firebase from "firebase";
-import { Todos } from "../type/User";
+import { Todo as TodoModel } from "../model/Todo";
+import { TodoContext } from "../context/TodoContext";
 
 
 const Todo = () => {
-    let history = useHistory();
+    const {
+        state: todos,
+        action: { init }
+    } = useContext(TodoContext);
+    const history = useHistory();
+
     const { id, user, dispatch } = useContext(UserContext);
     const { addIcon, lists } = useStyle();
-    const [ todoList , setTodoList ] = useState<Todos[]>();
     const [ selected, setSelectedListItem ] = useState<boolean>(false);
-    const [ todo, setTodo ] = useState<Todos>();
-    const onHandleClick = () => history.push("./TodoAdd")
+    const [ todo, setTodo ] = useState<TodoModel>();
+
     useEffect(() => {
-       firebase.database().ref(`/todos/${id}`).get().then((snapshop)=> {
-          if(snapshop.exists()) {
-              convertToData(snapshop.val());
+       firebase
+           .database()
+           .ref(`/todos/${id}`)
+           .get()
+           .then(snapshot => {
+               if (snapshot.exists()) {
+                   const todos = convertToData(snapshot.val());
+                   init(todos);
+               }
+           })
+           .catch(error => {
+               console.error(error);
+           })
+    },[ init ]);
 
-          }
-      }).catch((error)=>{
-          console.error(error);
-      })
-    },[]);
-
-    const convertToData = (data: any) => {
-
-        const dataArr = Object.entries(data);
-        const newArr:any[] = [];
-         for (let i = 0; i < dataArr.length; i++) {
-             dataArr[i].forEach((data, index)=>{
-                 if(index === 1) {
-                     newArr.push(dataArr[i][index]);
-                 }
-             })
-         }
-        setTodoList(newArr);
-        dispatch({type: "TODO_ADD" })
-    }
+    const onHandleClick = () => history.push("./TodoAdd");
 
     const onHandleListClick = () => {
-        history.push({ pathname:"./todoAdd", state: { todos: todo, option: "MODIFY" } });
+        history.push({
+            pathname:"./todoAdd",
+            state: { todos: todo, option: "MODIFY" }
+        });
     }
-
 
     return (
         <Page>
@@ -54,8 +53,7 @@ const Todo = () => {
                 { "내 할일 목록" + user.email }
             </AppBar>
             {
-                1>0 ?
-                    todoList?.map((data, index)=>{
+                todos.map((data, index)=>{
                     return (
                         <ListItem key={index.toString()} className={lists} onClick={()=> {
                             setSelectedListItem(true);
@@ -73,9 +71,7 @@ const Todo = () => {
                         </ListItem>
                     )
                 })
-                : "noData"
             }
-
             <Fab color="secondary" aria-label="add" onClick={onHandleClick} className={addIcon}>
                 <AddIcon/>
             </Fab>
@@ -83,6 +79,22 @@ const Todo = () => {
     )
 }
 
+
+const convertToData = <T extends {}> (data: T) => {
+    const entries = Object.entries<{ title: string, contents: string }>(data);
+
+    const todos: TodoModel[] = [];
+    for (let i = 0; i < entries.length; i++) {
+        const [ key, value ] = entries[i];  // [ "dadfh23u4", { title: string, contents: string } ]
+        todos.push({
+            id: key,
+            contents: value.contents,
+            title: value.title
+        });
+    }
+
+    return todos;
+}
 
 
 const useStyle = makeStyles({

@@ -1,9 +1,4 @@
-
-
-export interface Todos {
-    title: string,
-    contents: string
-}
+import { Todo } from "./Todo";
 
 
 export interface User {
@@ -12,6 +7,6 @@ export interface User {
         email: string,
         password: string | number,
     },
-    todos: Todos[],
+    todos: Todo[],
 }
 
