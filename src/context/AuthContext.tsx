@@ -1,7 +1,22 @@
 import React from "react";
+import { User } from "../model/User";
 
+type UserAction = LoginAction | LogoutAction | RegisterAction;
 
-// 사용자 인증 정보를 담아주세요.
+interface LoginAction {
+    type: "LOGIN",
+    payload: User
+}
+
+interface  LogoutAction {
+    type: "LOGOUT",
+    payload: string
+}
+
+interface RegisterAction {
+    type: "REGISTER",
+    payload: User
+}
 
 
 
