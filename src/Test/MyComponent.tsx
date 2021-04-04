@@ -39,20 +39,41 @@ export const LanguageContextProvider: FC = ({ children }) => {
     )
 }
 
+interface ThemeContextState {
+    theme: string;
+    changeTheme: (theme: string) => void;
+}
+
+
+export const ThemeContext = React.createContext<ThemeContextState>({
+    theme: "dark",
+    changeTheme: () => {}
+})
+
+
+export const ThemeContextProvider: FC = ({children}) => {
+    const [ theme, setTheme ] = useState<string>("dark");
+    const changeTheme = (theme: string) => {
+        setTheme(theme)
+    }
+    return(
+        <ThemeContext.Provider value={{ theme: theme, changeTheme: changeTheme}}>
+            { children }
+        </ThemeContext.Provider>
+    )
+}
 
 
 
 export const MyComponent: FC = (props) => {
 
-
-
-
     return (
         <>
             <LanguageContextProvider>
-                <Message/>
+                <ThemeContextProvider>
+                    <Message/>
+                </ThemeContextProvider>
             </LanguageContextProvider>
-
         </>
     )
 
