@@ -3,7 +3,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Login from "./page/Login";
 import Todo from "./page/Todo";
 import TodoAdd from "./page/TodoAdd";
-import { TodoContextProvider } from "./context/TodoContext";
+import { MyComponent } from "./Test/MyComponent";
 
 
 export enum UserAction {
@@ -51,17 +51,14 @@ function App() {
     ), [ userData.id, userData.user, userData.todos ]);
 
     return (
-        <TodoContextProvider>
-            <UserContext.Provider value={value}>
-                <BrowserRouter>
-                    <Switch>
-                        <Route path="/" exact component={Login}/>
-                        <Route path="/Todo" exact component={Todo}/>
-                        <Route path="/TodoAdd" exact component={TodoAdd}/>
-                    </Switch>
-                </BrowserRouter>
-            </UserContext.Provider>
-        </TodoContextProvider>
+            <BrowserRouter>
+                <Switch>
+                    <Route path="/" exact component={MyComponent}></Route>
+                    <Route path="/" exact component={Login}/>
+                    <Route path="/Todo" exact component={Todo}/>
+                    <Route path="/TodoAdd" exact component={TodoAdd}/>
+                </Switch>
+            </BrowserRouter>
     );
 }
 
