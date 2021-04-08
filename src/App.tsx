@@ -53,7 +53,6 @@ function App() {
     return (
             <BrowserRouter>
                 <Switch>
-                    <Route path="/" exact component={MyComponent}></Route>
                     <Route path="/" exact component={Login}/>
                     <Route path="/Todo" exact component={Todo}/>
                     <Route path="/TodoAdd" exact component={TodoAdd}/>
