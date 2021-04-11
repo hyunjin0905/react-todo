@@ -4,7 +4,7 @@ import Login from "./page/Login";
 import Todo from "./page/Todo";
 import TodoAdd from "./page/TodoAdd";
 import { MyComponent } from "./Test/MyComponent";
-
+import { CommentList } from "./Comment"
 
 export enum UserAction {
     USER_LOGIN = "USER_LOGIN",
@@ -53,7 +53,7 @@ function App() {
     return (
             <BrowserRouter>
                 <Switch>
-                    <Route path="/" exact component={Login}/>
+                    <Route path="/" exact component={CommentList}/>
                     <Route path="/Todo" exact component={Todo}/>
                     <Route path="/TodoAdd" exact component={TodoAdd}/>
                 </Switch>
