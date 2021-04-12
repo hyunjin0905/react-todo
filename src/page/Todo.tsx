@@ -21,7 +21,7 @@ const Todo = () => {
     useEffect(() => {
         firebase
             .database()
-            .ref(`/todos/${id}`)
+            .ref(`/todos/${user.id}`)
             .get()
             .then(snapshot => {
                 if (snapshot.exists()) {
@@ -50,8 +50,8 @@ const Todo = () => {
             </AppBar>
 
             {
-                todos && todos.length > 0 &&
-                todos.map((data: any, index: number) => {
+                user.todos && user.todos.length > 0 &&
+                user.todos.map((data: any, index: number) => {
                     return (
                         <ListItem key={index.toString()} className={lists} onClick={() => {
                             setSelectedListItem(true);

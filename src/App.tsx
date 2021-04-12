@@ -1,13 +1,10 @@
-import React, { useReducer, useMemo } from 'react';
+import React, { useReducer } from 'react';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Login from "./page/Login";
 import Todo from "./page/Todo";
 import TodoAdd from "./page/TodoAdd";
-import { MyComponent } from "./Test/MyComponent";
-import { CommentList } from "./Comment"
 import { User } from "./model/User";
 import { Todo as TodoModel } from "./model/Todo";
-
 
 export enum UserActionType {
     USER_LOGIN = "USER_LOGIN",
@@ -16,16 +13,15 @@ export enum UserActionType {
     ADD_TODO = "ADD_TODO",
     MODIFY_TODO = "MODIFY_TODO",
     DELETE_TODO = "DELETE_TODO",
-    INITIALIZE_TODO_LIST = "INITIALIZE_TODO_LIST",
 }
 
-type UserAction = UserLoginAction | UserLogoutAction | SetTodoAction
-                | AddTodoAction | ModifyTodoAction | DeleteTodoAction;
+type UserAction = UserLoginAction | UserLogoutAction | SetTodoAction | AddTodoAction | ModifyTodoAction | DeleteTodoAction;
 
 type UserLoginAction = {
     type: UserActionType.USER_LOGIN;
     payload: { id: string; email: string; password: string; };
 }
+
 type UserLogoutAction = { type: UserActionType.USER_LOGOUT };
 type SetTodoAction = { type: UserActionType.SET_TODO, payload: TodoModel[] };
 type AddTodoAction = { type: UserActionType.ADD_TODO, payload: TodoModel };
@@ -45,6 +41,8 @@ const intiUser: User = {
 
 const reducer: React.Reducer<User, UserAction> = (state, action) => {
     switch (action.type) {
+        case UserActionType.USER_LOGIN:
+            return { ...state, id: action.payload.id}
         case UserActionType.ADD_TODO:
             return { ...state, todos: [ ...state.todos, action.payload ] };
         case UserActionType.DELETE_TODO:
@@ -55,10 +53,10 @@ const reducer: React.Reducer<User, UserAction> = (state, action) => {
 }
 
 
-
 interface UserContextState {
     user: User;
     setTodos: (todos: TodoModel[]) => void;
+    login: (id: string, email: string, password: string) => void;
 }
 
 // @ts-ignore
@@ -77,6 +75,7 @@ function App() {
     const value = {
         user: userData,
         setTodos,
+        login
     };
 
     return (

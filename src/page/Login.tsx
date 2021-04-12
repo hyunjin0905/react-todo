@@ -9,7 +9,7 @@ import { useHistory } from "react-router";
 
 const Login = () => {
     const history = useHistory();
-    const { dispatch, id } = useContext(UserContext);
+    const { login, user } = useContext(UserContext);
     const [ email, setEmail ] = useState<string>("");
     const [ password, setPassword ] = useState<string>("");
     const [ errorLabel, setErrorLabel ] = useState<string>("");
@@ -28,13 +28,13 @@ const Login = () => {
         firebase.auth().signInWithEmailAndPassword(email, password)
             .then((user) => {
                 console.log(user);
-                dispatch({
+                login({
                         type: UserActionType.USER_LOGIN,
                         id: user.user?.uid,
                         user: { email: email, password: password }
                     }
                 );
-                history.replace("./Todo");
+                history.push("./Todo");
 
             })
             .catch((error) => {
