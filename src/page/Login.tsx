@@ -3,7 +3,7 @@ import { Button, makeStyles, TextField } from "@material-ui/core";
 import firebase from "firebase";
 import { Page } from "../components/Page";
 import { AppBar } from "../components/AppBar";
-import { UserContext, UserAction } from '../App';
+import { UserContext, UserActionType } from '../App';
 import { useHistory } from "react-router";
 
 
@@ -29,7 +29,7 @@ const Login = () => {
             .then((user) => {
                 console.log(user);
                 dispatch({
-                        type: UserAction.USER_LOGIN,
+                        type: UserActionType.USER_LOGIN,
                         id: user.user?.uid,
                         user: { email: email, password: password }
                     }

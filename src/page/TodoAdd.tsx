@@ -2,7 +2,7 @@ import React, { ChangeEvent, useContext, useState } from "react";
 import { Page } from "../components/Page";
 import { AppBar } from '../components/AppBar';
 import { TextField, Button, makeStyles } from "@material-ui/core";
-import { UserContext, UserAction } from '../App';
+import { UserContext, UserActionType } from '../App';
 import firebase from "firebase";
 import { useHistory, useLocation } from "react-router-dom";
 
@@ -24,7 +24,7 @@ const TodoAdd = () => {
             .push({ title: title, contents: contents })
             .then(res => {
                 console.log(res);
-                dispatch({ type: UserAction.ADD_TODO, todos: { title: title, contents: contents } })
+                dispatch({ type: UserActionType.ADD_TODO, todos: { title: title, contents: contents } })
                 history.replace("./Todo");
             })
             .catch(error => {

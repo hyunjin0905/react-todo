@@ -5,70 +5,80 @@ import Todo from "./page/Todo";
 import TodoAdd from "./page/TodoAdd";
 import { MyComponent } from "./Test/MyComponent";
 import { CommentList } from "./Comment"
+import { User } from "./model/User";
+import { Todo as TodoModel } from "./model/Todo";
 
-export enum UserAction {
+
+export enum UserActionType {
     USER_LOGIN = "USER_LOGIN",
     USER_LOGOUT = "USER_LOGOUT",
-    GET_TODO = "GET_TODO",
+    SET_TODO = "SET_TODO",
     ADD_TODO = "ADD_TODO",
     MODIFY_TODO = "MODIFY_TODO",
-    DELETE_TODO = "DELETE_TODO"
+    DELETE_TODO = "DELETE_TODO",
+    INITIALIZE_TODO_LIST = "INITIALIZE_TODO_LIST",
+}
+
+type UserAction = UserLoginAction | UserLogoutAction | SetTodoAction
+                | AddTodoAction | ModifyTodoAction | DeleteTodoAction;
+
+type UserLoginAction = {
+    type: UserActionType.USER_LOGIN;
+    payload: { id: string; email: string; password: string; };
+}
+type UserLogoutAction = { type: UserActionType.USER_LOGOUT };
+type SetTodoAction = { type: UserActionType.SET_TODO, payload: TodoModel[] };
+type AddTodoAction = { type: UserActionType.ADD_TODO, payload: TodoModel };
+type ModifyTodoAction = { type: UserActionType.MODIFY_TODO, payload: TodoModel };
+type DeleteTodoAction = { type: UserActionType.DELETE_TODO, payload: string; };
+
+
+const intiUser: User = {
+    id: "",
+    user: {
+        email: "",
+        password: ""
+    },
+    todos: []
 }
 
 
-const intiUser: any = {
-    id: "아이디가 없어요",
-    user: {},
-    todos: [],
-}
-
-
-const reducer: React.Reducer<any, any> = (state, nextAction) => {
-    console.log(nextAction);
-    switch (nextAction.type) {
-        case UserAction.USER_LOGIN:
-            return {
-              id: nextAction.id,
-             user: { email: nextAction.user.email , password: nextAction.user.password }
-            }
-        case UserAction.USER_LOGOUT:
-            return {}
-        case UserAction.GET_TODO:
-            return {
-                todos: nextAction.todos
-            }
-        case UserAction.ADD_TODO:
-            return {
-
-            }
-        case UserAction.MODIFY_TODO:
-            return {
-
-            }
-        case UserAction.DELETE_TODO:
-            return {
-
-            }
+const reducer: React.Reducer<User, UserAction> = (state, action) => {
+    switch (action.type) {
+        case UserActionType.ADD_TODO:
+            return { ...state, todos: [ ...state.todos, action.payload ] };
+        case UserActionType.DELETE_TODO:
+            return { ...state, todos: state.todos.filter(todo => todo.id !== action.payload) };
         default:
-            return {
-                ...state
-            }
+            return state;
     }
+}
 
+
+
+interface UserContextState {
+    user: User;
+    setTodos: (todos: TodoModel[]) => void;
 }
 
 // @ts-ignore
-export const UserContext = React.createContext <{ id: any, user: any, todos: any, dispatch: React.Dispatch<any> }>();
+export const UserContext = React.createContext<UserContextState>();
 
 function App() {
-
     const [ userData, dispatch ] = useReducer(reducer, intiUser);
+
+    const login = (id: string, email: string, password: string) => dispatch({
+        type: UserActionType.USER_LOGIN,
+        payload: { email, id, password }
+    })
+
+    const setTodos = (todos: TodoModel[]) => dispatch({ type: UserActionType.SET_TODO, payload: todos })
+
     const value = {
-            id: userData.id,
-            user: userData.user,
-            todos: userData.todos,
-            dispatch
-        };
+        user: userData,
+        setTodos,
+    };
+
     return (
         <UserContext.Provider value={value}>
             <BrowserRouter>

@@ -1,18 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Fab, makeStyles, ListItem, Grid } from "@material-ui/core";
+import { Fab, Grid, ListItem, makeStyles } from "@material-ui/core";
 import { Page } from "../components/Page";
 import { AppBar } from "../components/AppBar";
 import AddIcon from '@material-ui/icons/Add';
-import { UserContext, UserAction } from '../App';
+import { UserActionType, UserContext } from '../App';
 import { useHistory } from "react-router-dom";
 import firebase from "firebase";
 import { Todo as TodoModel } from "../model/Todo";
 
 
 const Todo = () => {
-    const { dispatch, id, user, todos } = useContext(UserContext);
+    const { user, setTodos } = useContext(UserContext);
 
-    console.log(id);
     const history = useHistory();
 
     const { addIcon, lists } = useStyle();
@@ -20,7 +19,6 @@ const Todo = () => {
     const [ todo, setTodo ] = useState<TodoModel>();
 
     useEffect(() => {
-        console.log(123123123)
         firebase
             .database()
             .ref(`/todos/${id}`)
@@ -28,14 +26,13 @@ const Todo = () => {
             .then(snapshot => {
                 if (snapshot.exists()) {
                     const todos = convertToData(snapshot.val());
-                    console.log(todos);
-                    dispatch({ type: UserAction.GET_TODO, todos: todos })
+                    setTodos(todos);
                 }
             })
             .catch(error => {
                 console.error(error);
             })
-    }, [ id ]);
+    }, []);
 
     const onHandleClick = () => history.replace("./TodoAdd");
 
