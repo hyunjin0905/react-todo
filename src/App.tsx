@@ -43,8 +43,6 @@ const reducer: React.Reducer<User, UserAction> = (state, action) => {
     switch (action.type) {
         case UserActionType.USER_LOGIN:
             return { ...state, id: action.payload.id}
-        case UserActionType.ADD_TODO:
-            return { ...state, todos: [ ...state.todos, action.payload ] };
         case UserActionType.DELETE_TODO:
             return { ...state, todos: state.todos.filter(todo => todo.id !== action.payload) };
         default:
@@ -57,6 +55,7 @@ interface UserContextState {
     user: User;
     setTodos: (todos: TodoModel[]) => void;
     login: (id: string, email: string, password: string) => void;
+    addTodo: (todos: TodoModel) => void;
 }
 
 // @ts-ignore
@@ -71,11 +70,13 @@ function App() {
     })
 
     const setTodos = (todos: TodoModel[]) => dispatch({ type: UserActionType.SET_TODO, payload: todos })
+    const addTodo = (todo: TodoModel) => dispatch({ type: UserActionType.ADD_TODO, payload: todo})
 
     const value = {
         user: userData,
         setTodos,
-        login
+        login,
+        addTodo
     };
 
     return (

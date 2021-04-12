@@ -28,12 +28,7 @@ const Login = () => {
         firebase.auth().signInWithEmailAndPassword(email, password)
             .then((user) => {
                 console.log(user);
-                login({
-                        type: UserActionType.USER_LOGIN,
-                        id: user.user?.uid,
-                        user: { email: email, password: password }
-                    }
-                );
+                user.user?.uid && login(user.user?.uid, email, password);
                 history.push("./Todo");
 
             })

@@ -1,37 +1,32 @@
 import React, { ChangeEvent, useContext, useState } from "react";
 import { Page } from "../components/Page";
 import { AppBar } from '../components/AppBar';
-import { TextField, Button, makeStyles } from "@material-ui/core";
-import { UserContext, UserActionType } from '../App';
+import { TextField, makeStyles } from "@material-ui/core";
+import { UserContext } from '../App';
 import firebase from "firebase";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const TodoAdd = () => {
     let history = useHistory();
-    let location = useLocation();
 
-    const { dispatch, id, todos, user } = useContext(UserContext);
+    const { addTodo, user } = useContext(UserContext);
     const [ title, setTitle ] = useState<string>("");
     const [ contents, setContents ] = useState<string>("");
     const { formWrap, textFieldWrap, buttonWrap } = useStyle();
 
 
-    console.log(id);
     const saveTodoData = () => {
         firebase
             .database()
-            .ref(`/todos/${id}`)
+            .ref(`/todos/${user.id}`)
             .push({ title: title, contents: contents })
             .then(res => {
-                console.log(res);
-                dispatch({ type: UserActionType.ADD_TODO, todos: { title: title, contents: contents } })
-                history.replace("./Todo");
+                addTodo({ id: "", title: title, contents: contents })
+                history.push("./Todo");
             })
             .catch(error => {
                 console.error(error);
             });
-
-
     }
 
     const onHandleClick = (e: React.MouseEvent) => {

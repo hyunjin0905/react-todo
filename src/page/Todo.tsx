@@ -11,7 +11,7 @@ import { Todo as TodoModel } from "../model/Todo";
 
 const Todo = () => {
     const { user, setTodos } = useContext(UserContext);
-
+    console.log(user);
     const history = useHistory();
 
     const { addIcon, lists } = useStyle();
@@ -24,6 +24,7 @@ const Todo = () => {
             .ref(`/todos/${user.id}`)
             .get()
             .then(snapshot => {
+                console.log(snapshot.val());
                 if (snapshot.exists()) {
                     const todos = convertToData(snapshot.val());
                     setTodos(todos);
@@ -32,7 +33,7 @@ const Todo = () => {
             .catch(error => {
                 console.error(error);
             })
-    }, []);
+    }, [user]);
 
     const onHandleClick = () => history.replace("./TodoAdd");
 
