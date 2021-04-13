@@ -17,11 +17,7 @@ export enum UserActionType {
 
 type UserAction = UserLoginAction | UserLogoutAction | SetTodoAction | AddTodoAction | ModifyTodoAction | DeleteTodoAction;
 
-type UserLoginAction = {
-    type: UserActionType.USER_LOGIN;
-    payload: { id: string; email: string; password: string; };
-}
-
+type UserLoginAction = { type: UserActionType.USER_LOGIN; payload: { id: string; email: string; password: string; }; }
 type UserLogoutAction = { type: UserActionType.USER_LOGOUT };
 type SetTodoAction = { type: UserActionType.SET_TODO, payload: TodoModel[] };
 type AddTodoAction = { type: UserActionType.ADD_TODO, payload: TodoModel };
