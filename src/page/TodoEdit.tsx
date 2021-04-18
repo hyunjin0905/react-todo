@@ -1,33 +1,51 @@
-import React, { ChangeEvent, useContext, useState } from "react";
+import React, { ChangeEvent, FC, useContext, useState } from "react";
 import { Page } from "../components/Page";
 import { AppBar } from '../components/AppBar';
 import { TextField, makeStyles } from "@material-ui/core";
 import { UserContext } from '../App';
 import firebase from "firebase";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
+import { Todo as TodoModel } from "../model/Todo";
 
-const TodoAdd = () => {
-    let history = useHistory();
 
-    const { addTodo, user } = useContext(UserContext);
-    const [ title, setTitle ] = useState<string>("");
-    const [ contents, setContents ] = useState<string>("");
+
+
+interface locationState {
+    todos: TodoModel,
+    type: string
+}
+
+const TodoEdit: FC = () => {
+    const location = useLocation();
+    const { state } = useLocation<locationState>()
+    const history = useHistory();
+    console.log(state);
+
+    const { addTodo, user, modifyTodo } = useContext(UserContext);
+    const [ title, setTitle ] = useState<string>(state.todos? state.todos.title : "" );
+    const [ contents, setContents ] = useState<string>(state.todos? state.todos.contents : "");
     const { formWrap, textFieldWrap, buttonWrap } = useStyle();
-
 
     const saveTodoData = () => {
         firebase
             .database()
             .ref(`/todos/${user.id}`)
-            .push({ title: title, contents: contents })
+            .push({ id: "", title: title, contents: contents })
             .then(res => {
-                addTodo({ id: "", title: title, contents: contents })
+                console.log(res);
+                if (state.type === "MODIFY") {
+                    modifyTodo({ id: "", title: title, contents: contents })
+                } else {
+                    addTodo({ id: "", title: title, contents: contents })
+                }
                 history.push("./Todo");
             })
             .catch(error => {
                 console.error(error);
             });
+
     }
+
 
     const onHandleClick = (e: React.MouseEvent) => {
         saveTodoData();
@@ -71,4 +89,4 @@ const useStyle = makeStyles({
     }
 })
 
-export default TodoAdd;
+export default TodoEdit;

@@ -15,7 +15,6 @@ const Todo = () => {
     const history = useHistory();
 
     const { addIcon, lists } = useStyle();
-    const [ selected, setSelectedListItem ] = useState<boolean>(false);
     const [ todo, setTodo ] = useState<TodoModel>();
 
     useEffect(() => {
@@ -24,7 +23,6 @@ const Todo = () => {
             .ref(`/todos/${user.id}`)
             .get()
             .then(snapshot => {
-                console.log(snapshot.val());
                 if (snapshot.exists()) {
                     const todos = convertToData(snapshot.val());
                     setTodos(todos);
@@ -33,14 +31,14 @@ const Todo = () => {
             .catch(error => {
                 console.error(error);
             })
-    }, [user]);
+    }, [todo]);
 
-    const onHandleClick = () => history.replace("./TodoAdd");
+    const onHandleClick = () => history.replace("./TodoEdit");
 
-    const onHandleListClick = () => {
+    const onHandleListClick = (data: TodoModel) => {
         history.push({
-            pathname: "./todoAdd",
-            state: { todos: todo, option: "MODIFY" }
+            pathname: "./todoEdit",
+            state: { todos: data, option: "MODIFY" }
         });
     }
 
@@ -55,9 +53,8 @@ const Todo = () => {
                 user.todos.map((data: any, index: number) => {
                     return (
                         <ListItem key={index.toString()} className={lists} onClick={() => {
-                            setSelectedListItem(true);
-                            setTodo(data)
-                            onHandleListClick()
+                            console.log(data);
+                            onHandleListClick(data)
                         }}>
                             <Grid container spacing={1} direction="column">
                                 <Grid item>
@@ -91,7 +88,7 @@ const convertToData = <T extends {}>(data: T) => {
             title: value.title
         });
     }
-
+    console.log(todos);
     return todos;
 }
 
